@@ -45,31 +45,29 @@ contract UniswapV2Pair is ERC20, Math {
         token1 = token1_;
     }
 
-    function mint() public {
+    function mint(address to) public returns (uint256 liquidity) {
+        (uint112 reserve0_, uint112 reserve1_, ) = getReserves();
+
         uint256 balance0 = IERC20(token0).balanceOf(address(this));
         uint256 balance1 = IERC20(token1).balanceOf(address(this));
-        uint256 amount0 = balance0 - reserve0;
-        uint256 amount1 = balance1 - reserve1;
 
-        uint256 liquidity;
+        uint256 amount0 = balance0 - reserve0_;
+        uint256 amount1 = balance1 - reserve1_;
 
-        uint256 totalSupply = totalSupply();
-
-        if (totalSupply == 0) {
+        if (totalSupply() == 0) {
             liquidity = Math.sqrt(amount0 * amount1) - MINIMUM_LIQUIDITY;
             _mint(address(0), MINIMUM_LIQUIDITY);
         } else {
             liquidity = Math.min(
-                (amount0 * totalSupply) / reserve0,
-                (amount1 * totalSupply) / reserve1
+                (amount0 * totalSupply()) / reserve0_,
+                (amount1 * totalSupply()) / reserve1_
             );
         }
 
         if (liquidity <= 0) revert InsufficientLiquidityMinted();
 
-        _mint(msg.sender, liquidity);
+        _mint(to, liquidity);
 
-        (uint112 reserve0_, uint112 reserve1_, ) = getReserves();
         _update(balance0, balance1, reserve0_, reserve1_);
     }
 
