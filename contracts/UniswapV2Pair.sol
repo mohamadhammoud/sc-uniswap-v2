@@ -20,6 +20,7 @@ contract UniswapV2Pair is ERC20, Math {
     uint256 public price0CumulativeLast;
     uint256 public price1CumulativeLast;
 
+    error AlreadyInitialized();
     error InsufficientLiquidityMinted();
     error InsufficientLiquidityBurned();
     error InsufficientOutputAmount();
@@ -32,6 +33,14 @@ contract UniswapV2Pair is ERC20, Math {
         address token0_,
         address token1_
     ) ERC20("UniswapV2 Pair", "UNIV2") {
+        token0 = token0_;
+        token1 = token1_;
+    }
+
+    function initialize(address token0_, address token1_) public {
+        if (token0 != address(0) || token1 != address(0))
+            revert AlreadyInitialized();
+
         token0 = token0_;
         token1 = token1_;
     }
