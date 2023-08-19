@@ -71,22 +71,24 @@ contract UniswapV2Pair is ERC20, Math {
         _update(balance0, balance1, reserve0_, reserve1_);
     }
 
-    function burn() public {
+    function burn(
+        address to
+    ) public returns (uint256 amount0, uint256 amount1) {
         uint256 balance0 = IERC20(token0).balanceOf(address(this));
         uint256 balance1 = IERC20(token1).balanceOf(address(this));
-        uint256 liquidity = balanceOf(msg.sender);
+        uint256 liquidity = balanceOf(address(this));
 
         uint256 totalSupply = totalSupply();
 
-        uint256 amount0 = (liquidity * balance0) / totalSupply;
-        uint256 amount1 = (liquidity * balance1) / totalSupply;
+        amount0 = (liquidity * balance0) / totalSupply;
+        amount1 = (liquidity * balance1) / totalSupply;
 
-        if (amount0 <= 0 || amount1 <= 0) revert InsufficientLiquidityBurned();
+        if (amount0 == 0 || amount1 == 0) revert InsufficientLiquidityBurned();
 
-        _burn(msg.sender, liquidity);
+        _burn(address(this), liquidity);
 
-        _safeTransfer(token0, msg.sender, amount0);
-        _safeTransfer(token1, msg.sender, amount1);
+        _safeTransfer(token0, to, amount0);
+        _safeTransfer(token1, to, amount1);
 
         balance0 = IERC20(token0).balanceOf(address(this));
         balance1 = IERC20(token1).balanceOf(address(this));
