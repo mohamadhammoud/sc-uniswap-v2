@@ -10,6 +10,7 @@ contract UniswapV2Router {
     error InsufficientBAmount();
     error InsufficientOutputAmount();
     error SafeTransferFailed();
+    error ExcessiveInputAmount();
 
     UniswapV2Factory factory;
 
@@ -85,6 +86,31 @@ contract UniswapV2Router {
 
         if (amounts[amounts.length - 1] < amountOutMin)
             revert InsufficientOutputAmount();
+
+        _safeTransferFrom(
+            path[0],
+            msg.sender,
+            UniswapV2Library.pairFor(address(factory), path[0], path[1]),
+            amounts[0]
+        );
+
+        _swap(amounts, path, to);
+    }
+
+    function swapTokensForExactTokens(
+        uint256 amountOut,
+        uint256 amountInMax,
+        address[] calldata path,
+        address to
+    ) public returns (uint256[] memory amounts) {
+        amounts = UniswapV2Library.getAmountsIn(
+            address(factory),
+            amountOut,
+            path
+        );
+
+        if (amounts[amounts.length - 1] > amountInMax)
+            revert ExcessiveInputAmount();
 
         _safeTransferFrom(
             path[0],
