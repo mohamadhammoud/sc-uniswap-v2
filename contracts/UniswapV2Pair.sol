@@ -97,7 +97,12 @@ contract UniswapV2Pair is ERC20, Math {
         _update(balance0, balance1, reserve0_, reserve1_);
     }
 
-    function swap(uint256 amount0Out, uint256 amount1Out, address to) public {
+    function swap(
+        uint256 amount0Out,
+        uint256 amount1Out,
+        address to,
+        bytes calldata data
+    ) public {
         if (amount0Out == 0 && amount1Out == 0)
             revert InsufficientOutputAmount();
 
