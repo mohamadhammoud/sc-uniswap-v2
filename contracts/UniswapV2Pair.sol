@@ -2,13 +2,16 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import "./libraries/Math.sol";
 import "./libraries/UQ112x112.sol";
 
 contract UniswapV2Pair is ERC20, Math, ReentrancyGuard {
     using UQ112x112 for uint224;
+    using SafeERC20 for IERC20;
 
     uint256 constant MINIMUM_LIQUIDITY = 1000;
 
@@ -181,10 +184,6 @@ contract UniswapV2Pair is ERC20, Math, ReentrancyGuard {
     }
 
     function _safeTransfer(address token, address to, uint256 value) private {
-        (bool success, bytes memory data) = token.call(
-            abi.encodeWithSignature("transfer(address,uint256)", to, value)
-        );
-        if (!success || (data.length != 0 && !abi.decode(data, (bool))))
-            revert TransferFailed();
+        IERC20(token).safeTransfer(to, value);
     }
 }
