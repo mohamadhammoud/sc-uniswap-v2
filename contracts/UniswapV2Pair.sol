@@ -35,13 +35,7 @@ contract UniswapV2Pair is ERC20, Math, ReentrancyGuard {
     error TransferFailed();
     error InvalidK();
 
-    constructor(
-        address token0_,
-        address token1_
-    ) ERC20("UniswapV2 Pair", "UNIV2") {
-        token0 = token0_;
-        token1 = token1_;
-    }
+    constructor() ERC20("UniswapV2 Pair", "UNIV2") {}
 
     function initialize(address token0_, address token1_) public {
         if (token0 != address(0) || token1 != address(0))
@@ -62,7 +56,9 @@ contract UniswapV2Pair is ERC20, Math, ReentrancyGuard {
 
         if (totalSupply() == 0) {
             liquidity = Math.sqrt(amount0 * amount1) - MINIMUM_LIQUIDITY;
-            _mint(address(0), MINIMUM_LIQUIDITY);
+
+            // note address(0) reverts
+            _mint(address(1), MINIMUM_LIQUIDITY);
         } else {
             liquidity = Math.min(
                 (amount0 * totalSupply()) / reserve0_,

@@ -1,11 +1,17 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
-import "./libraries/UniswapV2Library.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {UniswapV2Library} from "./libraries/UniswapV2Library.sol";
 import "./UniswapV2Pair.sol";
 import "./UniswapV2Factory.sol";
 
+import "hardhat/console.sol";
+
 contract UniswapV2Router {
+    using SafeERC20 for IERC20;
+
     error InsufficientAAmount();
     error InsufficientBAmount();
     error InsufficientOutputAmount();
@@ -45,6 +51,7 @@ contract UniswapV2Router {
             tokenA,
             tokenB
         );
+
         _safeTransferFrom(tokenA, msg.sender, pairAddress, amountA);
         _safeTransferFrom(tokenB, msg.sender, pairAddress, amountB);
         liquidity = UniswapV2Pair(pairAddress).mint(to);
@@ -204,15 +211,6 @@ contract UniswapV2Router {
         address to,
         uint256 value
     ) private {
-        (bool success, bytes memory data) = token.call(
-            abi.encodeWithSignature(
-                "transferFrom(address,address,uint256)",
-                from,
-                to,
-                value
-            )
-        );
-        if (!success || (data.length != 0 && !abi.decode(data, (bool))))
-            revert SafeTransferFailed();
+        IERC20(token).safeTransferFrom(from, to, value);
     }
 }

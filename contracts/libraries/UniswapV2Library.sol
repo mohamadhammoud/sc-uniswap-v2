@@ -24,11 +24,12 @@ library UniswapV2Library {
             : (reserve1, reserve0);
     }
 
+    // Set it to public rather than private because for usability in unit testing
     function pairFor(
         address factoryAddress,
         address tokenA,
         address tokenB
-    ) internal pure returns (address pairAddress) {
+    ) public pure returns (address pairAddress) {
         (address token0, address token1) = sortTokens(tokenA, tokenB);
 
         pairAddress = address(
