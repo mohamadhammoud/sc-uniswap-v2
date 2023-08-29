@@ -153,14 +153,13 @@ describe("Uniswap", function () {
         await UniswapV2Pair.attach(pair).balanceOf(owner.address)
       ).to.be.equal(0);
 
-      console.log(await tokenA.balanceOf(owner.address));
-      console.log(await tokenB.balanceOf(owner.address));
-
       expect(await tokenA.balanceOf(owner.address)).to.be.greaterThanOrEqual(
         oneMillionEther
       );
 
       expect(await tokenA.balanceOf(owner.address)).to.be.greaterThan(0);
+
+      // Flashloan
     });
   });
 });
