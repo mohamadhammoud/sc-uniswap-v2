@@ -129,6 +129,38 @@ describe("Uniswap", function () {
       expect(otherAccountBalance).to.be.greaterThanOrEqual(
         ethers.parseEther("497")
       );
+
+      // Remove Liquidity
+      const ownerBalance = await UniswapV2Pair.attach(pair).balanceOf(
+        owner.address
+      );
+
+      await UniswapV2Pair.attach(pair).approve(
+        uniswapV2Router_address,
+        ownerBalance
+      );
+
+      await uniswapV2Router.removeLiquidity(
+        tokenA_address,
+        tokenB_address,
+        ownerBalance,
+        ethers.parseEther("4000"),
+        ethers.parseEther("2000"),
+        owner.address
+      );
+
+      expect(
+        await UniswapV2Pair.attach(pair).balanceOf(owner.address)
+      ).to.be.equal(0);
+
+      console.log(await tokenA.balanceOf(owner.address));
+      console.log(await tokenB.balanceOf(owner.address));
+
+      expect(await tokenA.balanceOf(owner.address)).to.be.greaterThanOrEqual(
+        oneMillionEther
+      );
+
+      expect(await tokenA.balanceOf(owner.address)).to.be.greaterThan(0);
     });
   });
 });
