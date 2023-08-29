@@ -108,6 +108,27 @@ describe("Uniswap", function () {
       expect(Number(balance.toString())).to.be.eq(
         Number(expectedLiquiditybalance.toString())
       );
+
+      // Swapping
+      await tokenA.mint(otherAccount.address, oneMillionEther);
+
+      await tokenA
+        .connect(otherAccount)
+        .approve(uniswapV2Router_address, oneMillionEther);
+
+      await uniswapV2Router
+        .connect(otherAccount)
+        .swapExactTokensForTokens(
+          ethers.parseEther("1000"),
+          ethers.parseEther("497"),
+          [tokenA_address, tokenB_address],
+          otherAccount.address
+        );
+
+      const otherAccountBalance = await tokenB.balanceOf(otherAccount.address);
+      expect(otherAccountBalance).to.be.greaterThanOrEqual(
+        ethers.parseEther("497")
+      );
     });
   });
 });
