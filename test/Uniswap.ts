@@ -37,6 +37,22 @@ describe("Uniswap", function () {
       await uniswapV2Factory.getAddress()
     );
 
+    // Deploy Lender
+    const FlashLender = await ethers.getContractFactory("FlashLender");
+    const flashLender = await FlashLender.deploy(
+      [await tokenA.getAddress(), await tokenB.getAddress()],
+      100 // 1.00%
+    );
+
+    // Deploy Borrower
+    const FlashBorrower = await ethers.getContractFactory("FlashBorrower");
+    const flashBorrower = await FlashBorrower.deploy(
+      await flashLender.getAddress(),
+      await uniswapV2Router.getAddress(),
+      await tokenA.getAddress(),
+      await tokenB.getAddress()
+    );
+
     return {
       owner,
       otherAccount,
@@ -45,6 +61,8 @@ describe("Uniswap", function () {
       uniswapV2Router,
       lib,
       uniswapV2Factory,
+      flashLender,
+      flashBorrower,
     };
   }
 
@@ -58,6 +76,8 @@ describe("Uniswap", function () {
         uniswapV2Router,
         lib,
         uniswapV2Factory,
+        flashLender,
+        flashBorrower,
       } = await loadFixture(deployFixture);
 
       const oneMillionEther = ethers.parseEther("1000000");
@@ -78,6 +98,8 @@ describe("Uniswap", function () {
       const tokenB_address = await tokenB.getAddress();
       const uniswapV2Router_address = await uniswapV2Router.getAddress();
       const uniswapV2Factory_address = await uniswapV2Factory.getAddress();
+      const flashLender_address = await flashLender.getAddress();
+      const flashBorrower_address = await flashBorrower.getAddress();
 
       await tokenA.approve(uniswapV2Router_address, ethers.MaxUint256);
       await tokenB.approve(uniswapV2Router_address, ethers.MaxUint256);
@@ -160,6 +182,12 @@ describe("Uniswap", function () {
       expect(await tokenA.balanceOf(owner.address)).to.be.greaterThan(0);
 
       // Flashloan
+      // mint for lender to let it lend tokens
+      await tokenA.mint(flashLender_address, 100);
+      //mint for borrower to let it pay fee
+      await tokenA.mint(flashBorrower_address, 3);
+
+      await flashBorrower.connect(otherAccount).borrow(tokenA_address, 100);
     });
   });
 });

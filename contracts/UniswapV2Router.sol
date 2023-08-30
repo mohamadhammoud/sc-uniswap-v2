@@ -7,8 +7,6 @@ import {UniswapV2Library} from "./libraries/UniswapV2Library.sol";
 import "./UniswapV2Pair.sol";
 import "./UniswapV2Factory.sol";
 
-import "hardhat/console.sol";
-
 contract UniswapV2Router {
     using SafeERC20 for IERC20;
 
