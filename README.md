@@ -1,6 +1,5 @@
 # Uniswap V2 and ERC-3156 Integration
 
-```markdown
 [![TypeScript](https://img.shields.io/badge/TypeScript-4.4.4-blue)](https://www.typescriptlang.org/)
 [![Hardhat](https://img.shields.io/badge/Hardhat-2.x-orange)](https://hardhat.org/)
 [![Twitter: @YourTwitterHandle](https://img.shields.io/twitter/follow/YourTwitterHandle.svg?style=social)](https://twitter.com/YourTwitterHandle)
@@ -22,7 +21,6 @@ ERC-3156 provides a standardized interface for lending and borrowing assets. The
 
 - **FlashLender**: Implements the lending functionality allowing borrowers to temporarily borrow tokens.
 - **FlashLoanBorrower**: This contract defines the actions that the borrower can take when a flash loan is executed.
-```
 
 Integrating Uniswap V2 and ERC-3156 offers several benefits:
 
